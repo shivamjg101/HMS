@@ -1,7 +1,9 @@
 package org.hms.userms.services;
 
 import org.hms.userms.clients.ProfileClient;
+import org.hms.userms.dto.AdminRegisterDTO;
 import org.hms.userms.dto.MonthlyRoleCountDTO;
+import org.hms.userms.dto.RegisterDTO;
 import org.hms.userms.dto.RegistrationCountsDTO;
 import org.hms.userms.dto.Roles;
 import org.hms.userms.dto.UserDTO;
@@ -9,7 +11,6 @@ import org.hms.userms.entity.Users;
 import org.hms.userms.exception.HmsException;
 import org.hms.userms.mappers.UserMapper;
 import org.hms.userms.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-
-    private final  ProfileClient profileClient;
+    private final ProfileClient profileClient;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ProfileClient profileClient) {
         this.userRepository = userRepository;
@@ -33,13 +32,18 @@ public class UserServiceImpl implements UserService {
         this.profileClient = profileClient;
     }
 
-
     @Override
-    public void registerUser(UserDTO userDTO) throws HmsException {
-        Optional<Users> opt = userRepository.findByEmail(userDTO.getEmail());
-        if(opt.isPresent()){
+    public void registerUser(RegisterDTO registerDTO) throws HmsException {
+        if (registerDTO.getRole() == null
+                || registerDTO.getRole() == Roles.ADMIN
+                || (registerDTO.getRole() != Roles.DOCTOR && registerDTO.getRole() != Roles.PATIENT)) {
+            throw new HmsException("Invalid_Registration_Role");
+        }
+        Optional<Users> opt = userRepository.findByEmail(registerDTO.getEmail());
+        if (opt.isPresent()) {
             throw new HmsException("User_Already_Exists");
         }
+        UserDTO userDTO = toUserDTO(registerDTO);
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         Long profileId = null;
         if (userDTO.getRole().equals(Roles.DOCTOR)) {
@@ -50,6 +54,29 @@ public class UserServiceImpl implements UserService {
         userDTO.setProfileId(profileId);
         Users user = UserMapper.toEntity(userDTO);
         userRepository.save(user);
+    }
+
+    @Override
+    public void registerAdmin(AdminRegisterDTO adminRegisterDTO) throws HmsException {
+        Optional<Users> opt = userRepository.findByEmail(adminRegisterDTO.getEmail());
+        if (opt.isPresent()) {
+            throw new HmsException("User_Already_Exists");
+        }
+        Users admin = new Users();
+        admin.setName(adminRegisterDTO.getName());
+        admin.setEmail(adminRegisterDTO.getEmail());
+        admin.setPassword(passwordEncoder.encode(adminRegisterDTO.getPassword()));
+        admin.setRole(Roles.ADMIN);
+        userRepository.save(admin);
+    }
+
+    private UserDTO toUserDTO(RegisterDTO registerDTO) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(registerDTO.getName());
+        userDTO.setEmail(registerDTO.getEmail());
+        userDTO.setPassword(registerDTO.getPassword());
+        userDTO.setRole(registerDTO.getRole());
+        return userDTO;
     }
 
     @Override
@@ -73,7 +100,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(UserDTO userDTO) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateUser'");
     }
 

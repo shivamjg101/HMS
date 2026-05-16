@@ -16,6 +16,9 @@ messages:
   User_Already_Exists: User Already Exists.
   Wrong_Password: Wrong password.
   User_Not_Found: User not found.
+  Invalid_Registration_Role: Users can only register as doctor or patient.
+  Access_Denied: Access denied. Admin privileges required.
+  Invalid_Credentials: Invalid email or password.
 
 server:
   port: 8080
