@@ -1,0 +1,116 @@
+### HMS – User Service (via Gateway :9000)
+### Run services: Eureka → User-ms → ProfileMS → Appointment → GatewayMS
+### Tip (VS Code REST Client): run "Login Admin" first, then other requests use {{adminToken}}
+
+@baseUrl = http://localhost:9000
+
+###############################################################################
+# AUTH – Public (no token)
+###############################################################################
+
+### Login Admin (bootstrap user – created on first User-ms startup)
+# @name loginAdmin
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "admin@hms.local",
+  "password": "Admin@123"
+}
+
+###
+@adminToken = {{loginAdmin.response.body}}
+
+### Login Doctor
+# @name loginDoctor
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "doctor1@hms.local",
+  "password": "Doctor@123"
+}
+
+###
+@doctorToken = {{loginDoctor.response.body}}
+
+### Login Patient
+# @name loginPatient
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "patient1@hms.local",
+  "password": "Patient@123"
+}
+
+###
+@patientToken = {{loginPatient.response.body}}
+
+###############################################################################
+# REGISTER – Public (doctor / patient only)
+###############################################################################
+
+### Register Doctor (creates user + doctor profile)
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "Name": "Dr. Alice Smith",
+  "email": "doctor1@hms.local",
+  "password": "Doctor@123",
+  "role": "DOCTOR"
+}
+
+### Register Patient (creates user + patient profile)
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "Name": "John Patient",
+  "email": "patient1@hms.local",
+  "password": "Patient@123",
+  "role": "PATIENT"
+}
+
+### Register Another Doctor
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "Name": "Dr. Bob Wilson",
+  "email": "doctor2@hms.local",
+  "password": "Doctor@123",
+  "role": "DOCTOR"
+}
+
+###############################################################################
+# ADMIN – Requires admin JWT
+###############################################################################
+
+### Register New Admin (admin only)
+POST {{baseUrl}}/user/registerAdmin
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Secondary Admin",
+  "email": "admin2@hms.local",
+  "password": "Admin@456"
+}
+
+### Get Monthly Registration Counts (admin only)
+GET {{baseUrl}}/user/getRegistrationCounts
+Authorization: Bearer {{adminToken}}
+
+###############################################################################
+# USER – Authenticated
+###############################################################################
+
+### Get User Profile ID (replace 1 with actual user id)
+GET {{baseUrl}}/user/getProfile/1
+Authorization: Bearer {{adminToken}}
+
+### Test endpoint
+GET {{baseUrl}}/user/test
+Authorization: Bearer {{adminToken}}

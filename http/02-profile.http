@@ -1,0 +1,139 @@
+### HMS – Profile Service (via Gateway :9000)
+### Run "Login Admin" in 01-user.http first, or login below
+
+@baseUrl = http://localhost:9000
+
+### Quick login (admin)
+# @name loginAdmin
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "admin@hms.local",
+  "password": "Admin@123"
+}
+
+###
+@adminToken = {{loginAdmin.response.body}}
+
+###############################################################################
+# DOCTOR
+###############################################################################
+
+### Add Doctor (direct profile – no user account)
+POST {{baseUrl}}/profile/doctor/add
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Dr. Sarah Connor",
+  "email": "sarah.doctor@hms.local",
+  "dob": "1985-06-15",
+  "phone": "9876543210",
+  "address": "123 Medical Lane, City",
+  "licenseNo": "MED-LIC-001",
+  "specialization": "Cardiology",
+  "department": "Heart Care",
+  "totalExp": 10
+}
+
+### Get Doctor by ID
+GET {{baseUrl}}/profile/doctor/get/1
+Authorization: Bearer {{adminToken}}
+
+### Get Doctor Profile Picture ID
+GET {{baseUrl}}/profile/doctor/getProfileId/1
+Authorization: Bearer {{adminToken}}
+
+### Update Doctor
+PUT {{baseUrl}}/profile/doctor/update
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "Name": "Dr. Sarah Connor",
+  "email": "sarah.doctor@hms.local",
+  "dob": "1985-06-15",
+  "phone": "9876543210",
+  "address": "456 Updated Street, City",
+  "licenseNo": "MED-LIC-001",
+  "specialization": "Cardiology",
+  "department": "Heart Care",
+  "totalExp": 11
+}
+
+### Check Doctor Exists
+GET {{baseUrl}}/profile/doctor/exists/1
+Authorization: Bearer {{adminToken}}
+
+### Doctor Dropdowns
+GET {{baseUrl}}/profile/doctor/dropdowns
+Authorization: Bearer {{adminToken}}
+
+### Get All Doctors (admin only)
+GET {{baseUrl}}/profile/doctor/getAll
+Authorization: Bearer {{adminToken}}
+
+### Get Doctors by IDs
+GET {{baseUrl}}/profile/doctor/getDoctorsById?ids=1&ids=2
+Authorization: Bearer {{adminToken}}
+
+###############################################################################
+# PATIENT
+###############################################################################
+
+### Add Patient (direct profile – no user account)
+POST {{baseUrl}}/profile/patient/add
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Jane Doe",
+  "email": "jane.patient@hms.local",
+  "dob": "1990-03-20",
+  "phone": "9123456780",
+  "address": "789 Health Street, City",
+  "aadharNo": "123456789012",
+  "bloodGroup": "O_POSITIVE",
+  "allergies": "Penicillin",
+  "chronicDisease": "None"
+}
+
+### Get Patient by ID
+GET {{baseUrl}}/profile/patient/get/1
+Authorization: Bearer {{adminToken}}
+
+### Get Patient Profile Picture ID
+GET {{baseUrl}}/profile/patient/getProfileId/1
+Authorization: Bearer {{adminToken}}
+
+### Update Patient
+PUT {{baseUrl}}/profile/patient/update
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "Name": "Jane Doe",
+  "email": "jane.patient@hms.local",
+  "dob": "1990-03-20",
+  "phone": "9123456780",
+  "address": "789 Health Street, City",
+  "aadharNo": "123456789012",
+  "bloodGroup": "O_POSITIVE",
+  "allergies": "Penicillin, Dust",
+  "chronicDisease": "Asthma"
+}
+
+### Check Patient Exists
+GET {{baseUrl}}/profile/patient/exists/1
+Authorization: Bearer {{adminToken}}
+
+### Get All Patients (admin only)
+GET {{baseUrl}}/profile/patient/getAll
+Authorization: Bearer {{adminToken}}
+
+### Get Patients by IDs
+GET {{baseUrl}}/profile/patient/getPatientsById?ids=1&ids=2
+Authorization: Bearer {{adminToken}}

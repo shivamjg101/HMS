@@ -1,0 +1,122 @@
+### HMS – Appointment Reports & Prescriptions (via Gateway :9000)
+
+@baseUrl = http://localhost:9000
+
+### Quick login (admin)
+# @name loginAdmin
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "admin@hms.local",
+  "password": "Admin@123"
+}
+
+###
+@adminToken = {{loginAdmin.response.body}}
+
+###############################################################################
+# APPOINTMENT REPORTS
+###############################################################################
+
+### Create Appointment Report (with prescription & medicines)
+# @name createReport
+POST {{baseUrl}}/appointment/report/create
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentId": 1,
+  "symptoms": ["Fever", "Headache", "Fatigue"],
+  "diagnosis": "Viral infection",
+  "tests": ["Blood test", "CBC"],
+  "notes": "Rest and hydration advised",
+  "referral": "None",
+  "followUpDate": "2026-05-27",
+  "prescription": {
+    "patientId": 1,
+    "doctorId": 1,
+    "appointmentId": 1,
+    "prescriptionDate": "2026-05-16",
+    "notes": "Take after meals",
+    "medicines": [
+      {
+        "name": "Paracetamol",
+        "dosage": "500mg",
+        "frequency": "Twice daily",
+        "duration": 5,
+        "route": "oral",
+        "type": "tablet",
+        "instructions": "After food"
+      },
+      {
+        "name": "Vitamin C",
+        "dosage": "1000mg",
+        "frequency": "Once daily",
+        "duration": 7,
+        "route": "oral",
+        "type": "tablet",
+        "instructions": "Morning"
+      }
+    ]
+  }
+}
+
+###
+@recordId = {{createReport.response.body}}
+
+### Update Appointment Report
+PUT {{baseUrl}}/appointment/report/update
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "id": 1,
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentId": 1,
+  "symptoms": ["Fever", "Headache"],
+  "diagnosis": "Viral infection - improving",
+  "tests": ["Blood test"],
+  "notes": "Patient recovering well",
+  "referral": "None",
+  "followUpDate": "2026-05-30"
+}
+
+### Get Report by Appointment ID
+GET {{baseUrl}}/appointment/report/getByAppointmentId/1
+Authorization: Bearer {{adminToken}}
+
+### Get Report Details by Appointment ID
+GET {{baseUrl}}/appointment/report/getDetailsByAppointmentId/1
+Authorization: Bearer {{adminToken}}
+
+### Get Report by Record ID
+GET {{baseUrl}}/appointment/report/getById/1
+Authorization: Bearer {{adminToken}}
+
+### Get Records by Patient ID
+GET {{baseUrl}}/appointment/report/getRecordsByPatientId/1
+Authorization: Bearer {{adminToken}}
+
+### Check if Record Exists for Appointment
+GET {{baseUrl}}/appointment/report/isRecordExists/1
+Authorization: Bearer {{adminToken}}
+
+###############################################################################
+# PRESCRIPTIONS
+###############################################################################
+
+### Get Prescriptions by Patient
+GET {{baseUrl}}/appointment/report/getPrescriptionsByPatientId/1
+Authorization: Bearer {{adminToken}}
+
+### Get All Prescriptions (admin only)
+GET {{baseUrl}}/appointment/report/getAllPrescriptions
+Authorization: Bearer {{adminToken}}
+
+### Get Medicines by Prescription ID
+GET {{baseUrl}}/appointment/report/getMedicinesByPrescriptionId/1
+Authorization: Bearer {{adminToken}}

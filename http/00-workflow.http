@@ -1,0 +1,164 @@
+### HMS – End-to-end workflow
+### Run requests top to bottom. Uses VS Code REST Client or IntelliJ HTTP Client.
+### Gateway must be running on http://localhost:9000
+
+@baseUrl = http://localhost:9000
+
+###############################################################################
+# STEP 1 – Login as admin
+###############################################################################
+
+# @name loginAdmin
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "admin@hms.local",
+  "password": "Admin@123"
+}
+
+###
+@adminToken = {{loginAdmin.response.body}}
+
+###############################################################################
+# STEP 2 – Register doctor & patient (or skip if already registered)
+###############################################################################
+
+### Register Doctor
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "Name": "Dr. Alice Smith",
+  "email": "doctor1@hms.local",
+  "password": "Doctor@123",
+  "role": "DOCTOR"
+}
+
+### Register Patient
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "Name": "John Patient",
+  "email": "patient1@hms.local",
+  "password": "Patient@123",
+  "role": "PATIENT"
+}
+
+###############################################################################
+# STEP 3 – Add doctor & patient profiles directly (optional – if not using /user/register)
+###############################################################################
+
+### Add Doctor Profile
+POST {{baseUrl}}/profile/doctor/add
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Dr. Direct Add",
+  "email": "direct.doctor@hms.local",
+  "dob": "1980-01-10",
+  "phone": "9000000001",
+  "address": "Hospital Block A",
+  "licenseNo": "LIC-999",
+  "specialization": "General Medicine",
+  "department": "OPD",
+  "totalExp": 8
+}
+
+### Add Patient Profile
+POST {{baseUrl}}/profile/patient/add
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Direct Patient",
+  "email": "direct.patient@hms.local",
+  "dob": "1995-08-25",
+  "phone": "9000000002",
+  "address": "Patient Colony",
+  "aadharNo": "999988887777",
+  "bloodGroup": "A_POSITIVE",
+  "allergies": "None",
+  "chronicDisease": "None"
+}
+
+###############################################################################
+# STEP 4 – Book appointment (use profile ids from steps 2/3 – default 1 & 1)
+###############################################################################
+
+# @name bookAppointment
+POST {{baseUrl}}/appointment/schedule
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentTime": "2026-05-25T14:00:00",
+  "status": "SCHEDULED",
+  "reason": "Routine consultation",
+  "notes": "Booked via workflow"
+}
+
+###
+@appointmentId = {{bookAppointment.response.body}}
+
+###############################################################################
+# STEP 5 – Verify appointment & profiles
+###############################################################################
+
+### Get appointment details
+GET {{baseUrl}}/appointment/get/details/{{appointmentId}}
+Authorization: Bearer {{adminToken}}
+
+### Get doctor
+GET {{baseUrl}}/profile/doctor/get/1
+Authorization: Bearer {{adminToken}}
+
+### Get patient
+GET {{baseUrl}}/profile/patient/get/1
+Authorization: Bearer {{adminToken}}
+
+### Today's appointments
+GET {{baseUrl}}/appointment/today
+Authorization: Bearer {{adminToken}}
+
+###############################################################################
+# STEP 6 – Create medical report for the appointment
+###############################################################################
+
+POST {{baseUrl}}/appointment/report/create
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentId": {{appointmentId}},
+  "symptoms": ["Cough", "Mild fever"],
+  "diagnosis": "Upper respiratory infection",
+  "tests": ["Chest X-ray"],
+  "notes": "Advised steam inhalation",
+  "referral": "None",
+  "followUpDate": "2026-06-01",
+  "prescription": {
+    "patientId": 1,
+    "doctorId": 1,
+    "appointmentId": {{appointmentId}},
+    "prescriptionDate": "2026-05-16",
+    "notes": "Complete full course",
+    "medicines": [
+      {
+        "name": "Azithromycin",
+        "dosage": "250mg",
+        "frequency": "Once daily",
+        "duration": 3,
+        "route": "oral",
+        "type": "tablet",
+        "instructions": "After dinner"
+      }
+    ]
+  }
+}

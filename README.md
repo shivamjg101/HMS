@@ -265,8 +265,27 @@ HMS/
 ├── User-ms/           # Users, auth, JWT
 ├── ProfileMS/         # Doctor & patient profiles
 ├── Appointment/       # Appointments, records, prescriptions
+├── http/              # Ready-to-run .http API request files
 └── README.md
 ```
+
+---
+
+## HTTP Request Files
+
+The `http/` folder contains `.http` files for **VS Code REST Client** or **IntelliJ HTTP Client**. All requests go through the gateway at `http://localhost:9000`.
+
+| File | Description |
+|------|-------------|
+| `00-workflow.http` | Full flow: login → register → add profiles → book appointment → create report |
+| `01-user.http` | Login, register (doctor/patient/admin), user endpoints |
+| `02-profile.http` | Add/update/get doctors and patients |
+| `03-appointment.http` | Book, cancel, list appointments and analytics |
+| `04-reports.http` | Medical reports, prescriptions, medicines |
+
+**How to use (VS Code):** Install the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension, open any `.http` file, run **Login Admin** first, then click **Send Request** on other calls.
+
+**How to use (IntelliJ):** Open any `.http` file and click the green run icon next to each request.
 
 Each module is an independent Maven project with its own `pom.xml`.
 

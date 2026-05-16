@@ -1,0 +1,96 @@
+### HMS – Appointment Service (via Gateway :9000)
+### Prerequisites: doctor profile id + patient profile id exist
+### Run login in 01-user.http or use quick login below
+
+@baseUrl = http://localhost:9000
+
+### Quick login (admin)
+# @name loginAdmin
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "admin@hms.local",
+  "password": "Admin@123"
+}
+
+###
+@adminToken = {{loginAdmin.response.body}}
+
+###############################################################################
+# SCHEDULE & MANAGE APPOINTMENTS
+###############################################################################
+
+### Book / Schedule Appointment
+# @name scheduleAppointment
+POST {{baseUrl}}/appointment/schedule
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentTime": "2026-05-20T10:30:00",
+  "status": "SCHEDULED",
+  "reason": "General checkup",
+  "notes": "First visit"
+}
+
+###
+@appointmentId = {{scheduleAppointment.response.body}}
+
+### Cancel Appointment
+PUT {{baseUrl}}/appointment/cancel/1
+Authorization: Bearer {{adminToken}}
+
+### Get Appointment by ID
+GET {{baseUrl}}/appointment/get/1
+Authorization: Bearer {{adminToken}}
+
+### Get Appointment Details with Names
+GET {{baseUrl}}/appointment/get/details/1
+Authorization: Bearer {{adminToken}}
+
+### Get All Appointments by Patient
+GET {{baseUrl}}/appointment/getAllByPatient/1
+Authorization: Bearer {{adminToken}}
+
+### Get All Appointments by Doctor
+GET {{baseUrl}}/appointment/getAllByDoctor/1
+Authorization: Bearer {{adminToken}}
+
+### Get Today's Appointments
+GET {{baseUrl}}/appointment/today
+Authorization: Bearer {{adminToken}}
+
+###############################################################################
+# ANALYTICS
+###############################################################################
+
+### Visit Count by Patient
+GET {{baseUrl}}/appointment/countByPatient/1
+Authorization: Bearer {{adminToken}}
+
+### Visit Count by Doctor
+GET {{baseUrl}}/appointment/countByDoctor/1
+Authorization: Bearer {{adminToken}}
+
+### Overall Visit Count (admin only)
+GET {{baseUrl}}/appointment/visitCount
+Authorization: Bearer {{adminToken}}
+
+### Reason Count by Patient
+GET {{baseUrl}}/appointment/countReasonsByPatient/1
+Authorization: Bearer {{adminToken}}
+
+### Reason Count by Doctor
+GET {{baseUrl}}/appointment/countReasonsByDoctor/1
+Authorization: Bearer {{adminToken}}
+
+### Overall Reason Count (admin only)
+GET {{baseUrl}}/appointment/countReasons
+Authorization: Bearer {{adminToken}}
+
+### Get Medicines by Patient
+GET {{baseUrl}}/appointment/getMedicinesByPatient/1
+Authorization: Bearer {{adminToken}}
