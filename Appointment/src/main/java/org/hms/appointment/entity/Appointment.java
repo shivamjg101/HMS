@@ -1,0 +1,37 @@
+package org.hms.appointment.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hms.appointment.dto.AppointmentDTO;
+import org.hms.appointment.dto.Status;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Appointment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long patientId;
+    private Long doctorId;
+    private LocalDateTime appointmentTime;
+    private Status status;
+    private String reason;
+    private String notes;
+
+    public AppointmentDTO toDTO() {
+        return new AppointmentDTO(id, patientId, doctorId, appointmentTime, status, reason, notes);
+    }
+
+    public Appointment(Long id) {
+        this.id = id;
+    }
+}

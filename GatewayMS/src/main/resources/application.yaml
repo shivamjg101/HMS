@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: GatewayMS
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: User-ms
+              uri: lb://User-ms
+              predicates:
+                - Path=/user/**
+              filters:
+                - TokenFilter
+
+            - id: ProfileMs
+              uri: lb://ProfileMs
+              predicates:
+                - Path=/profile/**
+              filters:
+                - TokenFilter
+
+            - id: Appointment
+              uri: lb://Appointment
+              predicates:
+                - Path=/appointment/**
+              filters:
+                - TokenFilter
+
+server:
+  port: 9000
+
+eureka:
+  client:
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}

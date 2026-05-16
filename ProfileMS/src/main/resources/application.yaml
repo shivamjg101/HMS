@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: ProfileMS
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/profiledb
+    username: postgres
+    password: Naval@132003007
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 9100
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:4200

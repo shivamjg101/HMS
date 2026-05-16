@@ -1,0 +1,22 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Maven wrapper (keep wrapper jar tracked if present)
+!.mvn/wrapper/maven-wrapper.jar

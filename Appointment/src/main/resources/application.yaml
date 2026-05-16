@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: Appointment
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/appointmentdb
+    username: postgres
+    password: Naval@132003007
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
+APPOINTMENT_NOT_FOUND: "Appointment not found"
+APPOINTMENT_ALREADY_CANCELLED: "Appointment already cancelled"
+DOCTOR_NOT_FOUND: "Doctor not found"
+PATIENT_NOT_FOUND: "Patient not found"
+
+eureka:
+  client:
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+  # instance:
+  #   instance-id: ${spring.application.name}:${random.value}
+
+profilems:
+  url: ${PROFILEMS_URL:http://localhost:9100}
+
+server:
+  port: 9200
