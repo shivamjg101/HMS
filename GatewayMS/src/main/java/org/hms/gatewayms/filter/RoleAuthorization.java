@@ -15,7 +15,9 @@ public final class RoleAuthorization {
 
     private static final Set<String> ADMIN_ONLY_PATHS = Set.of(
             "/user/registerAdmin",
+            "/user/registerDoctor",
             "/user/getRegistrationCounts",
+            "/profile/doctor/add",
             "/profile/doctor/getAll",
             "/profile/patient/getAll",
             "/appointment/visitCount",

@@ -16,7 +16,7 @@ messages:
   User_Already_Exists: User Already Exists.
   Wrong_Password: Wrong password.
   User_Not_Found: User not found.
-  Invalid_Registration_Role: Users can only register as doctor or patient.
+  Invalid_Registration_Role: Public registration is for patients only. Doctors must be registered by an admin.
   Access_Denied: Access denied. Admin privileges required.
   Invalid_Credentials: Invalid email or password.
 

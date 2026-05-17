@@ -48,19 +48,8 @@ Content-Type: application/json
 @patientToken = {{loginPatient.response.body}}
 
 ###############################################################################
-# REGISTER – Public (doctor / patient only)
+# REGISTER – Public (patient only)
 ###############################################################################
-
-### Register Doctor (creates user + doctor profile)
-POST {{baseUrl}}/user/register
-Content-Type: application/json
-
-{
-  "Name": "Dr. Alice Smith",
-  "email": "doctor1@hms.local",
-  "password": "Doctor@123",
-  "role": "DOCTOR"
-}
 
 ### Register Patient (creates user + patient profile)
 POST {{baseUrl}}/user/register
@@ -69,24 +58,34 @@ Content-Type: application/json
 {
   "Name": "John Patient",
   "email": "patient1@hms.local",
-  "password": "Patient@123",
-  "role": "PATIENT"
-}
-
-### Register Another Doctor
-POST {{baseUrl}}/user/register
-Content-Type: application/json
-
-{
-  "Name": "Dr. Bob Wilson",
-  "email": "doctor2@hms.local",
-  "password": "Doctor@123",
-  "role": "DOCTOR"
+  "password": "Patient@123"
 }
 
 ###############################################################################
 # ADMIN – Requires admin JWT
 ###############################################################################
+
+### Register Doctor (admin only – creates user + doctor profile)
+POST {{baseUrl}}/user/registerDoctor
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Dr. Alice Smith",
+  "email": "doctor1@hms.local",
+  "password": "Doctor@123"
+}
+
+### Register Another Doctor (admin only)
+POST {{baseUrl}}/user/registerDoctor
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "Name": "Dr. Bob Wilson",
+  "email": "doctor2@hms.local",
+  "password": "Doctor@123"
+}
 
 ### Register New Admin (admin only)
 POST {{baseUrl}}/user/registerAdmin

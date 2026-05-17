@@ -21,29 +21,28 @@ Content-Type: application/json
 @adminToken = {{loginAdmin.response.body}}
 
 ###############################################################################
-# STEP 2 – Register doctor & patient (or skip if already registered)
+# STEP 2 – Register doctor (admin) & patient (public)
 ###############################################################################
 
-### Register Doctor
-POST {{baseUrl}}/user/register
+### Register Doctor (admin only)
+POST {{baseUrl}}/user/registerDoctor
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
   "Name": "Dr. Alice Smith",
   "email": "doctor1@hms.local",
-  "password": "Doctor@123",
-  "role": "DOCTOR"
+  "password": "Doctor@123"
 }
 
-### Register Patient
+### Register Patient (public)
 POST {{baseUrl}}/user/register
 Content-Type: application/json
 
 {
   "Name": "John Patient",
   "email": "patient1@hms.local",
-  "password": "Patient@123",
-  "role": "PATIENT"
+  "password": "Patient@123"
 }
 
 ###############################################################################

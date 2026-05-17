@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterDTO {
+public class DoctorRegisterDTO {
 
     @NotBlank(message = "Name is mandatory")
     private String Name;

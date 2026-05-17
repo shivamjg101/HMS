@@ -2,6 +2,7 @@ package org.hms.userms.controller;
 
 import jakarta.validation.Valid;
 import org.hms.userms.dto.AdminRegisterDTO;
+import org.hms.userms.dto.DoctorRegisterDTO;
 import org.hms.userms.dto.LoginDTO;
 import org.hms.userms.dto.RegisterDTO;
 import org.hms.userms.dto.RegistrationCountsDTO;
@@ -43,6 +44,17 @@ public class UserController {
     public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegisterDTO registerDTO) throws HmsException {
         userService.registerUser(registerDTO);
         return new ResponseEntity<>(new ResponseDTO("Account_Created"), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/registerDoctor")
+    public ResponseEntity<ResponseDTO> registerDoctor(
+            @Valid @RequestBody DoctorRegisterDTO doctorRegisterDTO,
+            @RequestHeader(value = "X-User-Role", required = false) String requesterRole) throws HmsException {
+        if (!Roles.ADMIN.name().equals(requesterRole)) {
+            throw new HmsException("Access_Denied");
+        }
+        userService.registerDoctor(doctorRegisterDTO);
+        return new ResponseEntity<>(new ResponseDTO("Doctor_Created"), HttpStatus.CREATED);
     }
 
     @PostMapping("/registerAdmin")

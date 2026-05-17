@@ -2,6 +2,7 @@ package org.hms.userms.services;
 
 
 import org.hms.userms.dto.AdminRegisterDTO;
+import org.hms.userms.dto.DoctorRegisterDTO;
 import org.hms.userms.dto.RegisterDTO;
 import org.hms.userms.dto.RegistrationCountsDTO;
 import org.hms.userms.dto.UserDTO;
@@ -13,6 +14,8 @@ public  interface UserService {
     public void registerUser(RegisterDTO registerDTO) throws HmsException;
 
     public void registerAdmin(AdminRegisterDTO adminRegisterDTO) throws HmsException;
+
+    public void registerDoctor(DoctorRegisterDTO doctorRegisterDTO) throws HmsException;
 
     public UserDTO loginUser(UserDTO  userDTO) throws HmsException;
     public UserDTO getUserById(Long id) throws HmsException;

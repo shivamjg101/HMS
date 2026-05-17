@@ -53,9 +53,11 @@ All external traffic goes through **GatewayMS** on port `9000`. Services registe
 
 - JWT-based authentication via the API gateway
 - User roles: `PATIENT`, `DOCTOR`, `ADMIN`
-- Public registration for **doctor** and **patient** only (admin self-registration is blocked)
+- Public **patient** self-registration only (`POST /user/register`)
+- **Doctor** registration restricted to **admin** (`POST /user/registerDoctor`)
+- Admin self-registration is blocked on public endpoints
 - Bootstrap **system admin** created on first startup
-- Admins can register additional admins via a protected endpoint
+- Admins can register additional admins and doctors via protected endpoints
 - Doctor/patient profile management
 - Appointment scheduling, cancellation, and analytics
 - Appointment reports, prescriptions, and medicine tracking
@@ -77,8 +79,10 @@ Require a valid JWT with role `ADMIN`:
 
 | Method | Path                                      |
 |--------|-------------------------------------------|
+| POST   | `/user/registerDoctor`                    |
 | POST   | `/user/registerAdmin`                     |
 | GET    | `/user/getRegistrationCounts`             |
+| POST   | `/profile/doctor/add`                     |
 | GET    | `/profile/doctor/getAll`                  |
 | GET    | `/profile/patient/getAll`                 |
 | GET    | `/appointment/visitCount`                 |
@@ -98,7 +102,7 @@ On first startup, **User-ms** seeds a default admin if one does not exist:
 | Email    | `admin@hms.local`  |
 | Password | `Admin@123`        |
 
-> Change these credentials in production. Additional admins can be created by an existing admin via `POST /user/registerAdmin`.
+> Change these credentials in production. Additional admins can be created via `POST /user/registerAdmin`. Doctors can only be created by an admin via `POST /user/registerDoctor`.
 
 ---
 
@@ -179,8 +183,21 @@ Content-Type: application/json
 {
   "Name": "John Doe",
   "email": "john@example.com",
-  "password": "password123",
-  "role": "PATIENT"
+  "password": "password123"
+}
+```
+
+#### Register a doctor (admin only)
+
+```http
+POST http://localhost:9000/user/registerDoctor
+Authorization: Bearer <admin-jwt>
+Content-Type: application/json
+
+{
+  "Name": "Dr. Alice Smith",
+  "email": "doctor1@hms.local",
+  "password": "Doctor@123"
 }
 ```
 
@@ -224,8 +241,9 @@ Content-Type: application/json
 
 | Method | Path                    | Access        | Description                    |
 |--------|-------------------------|---------------|--------------------------------|
-| POST   | `/user/register`        | Public        | Register doctor or patient     |
+| POST   | `/user/register`        | Public        | Register patient (self-signup) |
 | POST   | `/user/login`           | Public        | Login, returns JWT             |
+| POST   | `/user/registerDoctor`  | Admin         | Register doctor (user + profile) |
 | POST   | `/user/registerAdmin`   | Admin         | Create a new admin user        |
 | GET    | `/user/getProfile/{id}` | Authenticated | Get profile ID for a user      |
 | GET    | `/user/getRegistrationCounts` | Admin   | Monthly registration stats     |
@@ -234,7 +252,7 @@ Content-Type: application/json
 
 | Method | Path                         | Description              |
 |--------|------------------------------|--------------------------|
-| POST   | `/profile/doctor/add`        | Add doctor profile       |
+| POST   | `/profile/doctor/add`        | Add doctor profile (admin) |
 | GET    | `/profile/doctor/get/{id}`   | Get doctor by ID         |
 | GET    | `/profile/doctor/getAll`     | List all doctors (admin) |
 | POST   | `/profile/patient/add`       | Add patient profile      |
@@ -278,7 +296,7 @@ The `http/` folder contains `.http` files for **VS Code REST Client** or **Intel
 | File | Description |
 |------|-------------|
 | `00-workflow.http` | Full flow: login → register → add profiles → book appointment → create report |
-| `01-user.http` | Login, register (doctor/patient/admin), user endpoints |
+| `01-user.http` | Login, register patient, register doctor/admin (admin), user endpoints |
 | `02-profile.http` | Add/update/get doctors and patients |
 | `03-appointment.http` | Book, cancel, list appointments and analytics |
 | `04-reports.http` | Medical reports, prescriptions, medicines |
